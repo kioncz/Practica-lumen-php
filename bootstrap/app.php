@@ -24,7 +24,8 @@ $app = new Laravel\Lumen\Application(
 );
 
 $app->withFacades();
-
+$app->configure('view');
+$app->configure('database');
 $app->withEloquent();
 //esto es para que funcione el generador de lumen
 $app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);

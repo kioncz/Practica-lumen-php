@@ -23,17 +23,17 @@ class JwtMiddleware
     {
         // Pre-Middleware Action
         // acciones antes de que la solicitud llegue al controlador
-        if (!$request->hasHeader('Authorization')) {
+        $authorization = $request->header('Authorization');
+
+        if ($authorization) {
+            $array = explode(' ', $authorization);
+            $token = $array[1] ?? null;
+        } elseif ($request->hasCookie('token')) {
+            $token = $request->cookie('token');
+        } else {
             return response()->json(['error' => 'Token no proporcionado'], 401);
         }
 
-
-        // Obtener el token JWT del encabezado de autorización
-        //notas: expiredException es una clase de excepcion que se lanza cuando un token JWT ha expirado,
-        //  es decir, cuando el tiempo de vida del token ha pasado y ya no es valido para autenticar al usuario.
-        // lo mismo que hace exception pero para cualquier otro error que pueda ocurrir al decodificar el token JWT.
-        $array = explode(' ', $request->header('Authorization'));
-        $token = $array[1] ?? null;
         try {
             $credentials = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
         } catch (ExpiredException $e) {

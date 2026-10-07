@@ -3,13 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-//sirve para manejar la autenticacion de usuarios y generar tokens JWT
-// para la autenticacion de usuarios en una aplicacion web.
-use Laravel\Lumen\Routing\Controller as BaseController;
 use App\Models\Usuario;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class AuthController extends Controller
 {
@@ -41,28 +37,40 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required'
         ]);
-        //basicamente lo que hace es buscar un usuario en la base de datos con el
-        // email proporcionado en la solicitud,
+
         $usuario = Usuario::where('email', $request->input('email'))->first();
 
-        //ima condicion que verifica si el usuario existe y si la contraseña proporcionada
-        // coincide con la almacenada en la base de datos.
         if (!$usuario || !password_verify($request->input('password'), $usuario->password)) {
             return response()->json(['error' => 'Credenciales inválidas'], 401);
         }
-        // Si las credenciales son válidas, se genera un token JWT para el usuario.
-        if ($usuario) {
-            $token = $this->jwt($usuario);
-            return response()->json(['token' => $token, 'message' => 'Credenciales válidas'], 200);
+
+        //validacion para el login con rediccionamiento a la vista de peliculas,
+        //  y creacion de cookie para el token
+        $token = $this->jwt($usuario);
+        $cookie = Cookie::create(
+            'token',
+            $token,
+            time() + 3600,
+            '/',
+            null,
+            false,
+            true
+        );
+
+        return redirect('/peliculas')->withCookie($cookie);
+
+    }
+    //validacion de campos vacios para el login,
+    //  si los campos estan vacios se devuelve un error 400
+    public function valiation_null(Request $request)
+    {
+        $this->validate($request, [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if (!$request->input('email') || !$request->input('password')) {
+            return response()->json(['error' => 'Campos vacíos'], 400);
         }
-
-        // Si el usuario no se encuentra, se devuelve un mensaje de error
-        // con un código de estado 404.
-        if (!$usuario) {
-            return response()->json(['error' => 'Usuario no encontrado'], 404);
-        }
-
-        return response()->json(['error' => 'Error desconocido'], 500);
-
     }
 }

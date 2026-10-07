@@ -18,6 +18,7 @@
 //     return $router->app->version();
 // });
 
+$router->get('/login', ['uses' => 'UsuarioController@index']);
 $router->post('/auth/login', ['uses' => 'AuthController@authenticate']);
 
 $router->group(['middleware' => 'jwt'], function () use ($router) {
@@ -25,7 +26,12 @@ $router->group(['middleware' => 'jwt'], function () use ($router) {
 
     $router->get('/peliculas', ['uses' => 'PeliculaController@index']);
     $router->post('/peliculas', ['uses' => 'PeliculaController@store']);
-    $router->get('/peliculas/{id}', ['uses' => 'PeliculaController@show']);
+    $router->get('/peliculas/buscargenero', [
+        'uses' => 'PeliculaController@buscargenero'
+    ]);
+    $router->get('/peliculas/todas', [
+        'uses' => 'PeliculaController@allPeliculas'
+    ]);
     $router->put('/peliculas/{id}', ['uses' => 'PeliculaController@update']);
     $router->delete('/peliculas/{id}', ['uses' => 'PeliculaController@destroy']);
 
@@ -39,7 +45,7 @@ $router->group(['middleware' => 'jwt'], function () use ($router) {
 
     //cuando no existe la ruta, se devuelve un error 404
 $router->get('/{any:.*}', function () {
-    return response()->json(['message' => 'Ruta no encontrada'], 404);  
+    return response()->json(['message' => 'Ruta no encontrada'], 404);
 });
 
 //notas: con resepecto a los jwt se deben hacer algunos cambios con respecyo a una forma de auth

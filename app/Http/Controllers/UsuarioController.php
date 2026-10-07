@@ -13,10 +13,11 @@ class UsuarioController extends Controller
     //  en este caso, todos los usuarios de la base de datos.
     public function index()
     {
-        $usuarios = Usuario::all();
-        return response()->json($usuarios);
         //formato json es un formato de intercambio de datos ligero
         // y fácil de leer y escribir, que se utiliza para enviar y
-        // recibir datos entre un cliente y un servidor en aplicaciones web.
+        // recibir datos entre un cliente y un servidor en aplicaciones web.);
+
+        return view('login.login');
     }
+
 }
