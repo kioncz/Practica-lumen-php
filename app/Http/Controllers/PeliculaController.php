@@ -11,8 +11,10 @@ class PeliculaController extends Controller
     //
     public function index()
     {
+        $this->pelicula = new Pelicula();
+
         return view('pelicula.pelicula', [
-            'peliculas' => collect(),
+            'peliculas' => $this->pelicula->obtenerTodas(),
             'genero' => ''
         ]);
     }
@@ -42,6 +44,28 @@ class PeliculaController extends Controller
 
         return view('pelicula.pelicula', $data);
     }
+
+    /**
+     * Obtiene la información completa de una película.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPeliculaFullInfo($id)
+    {
+        $this->pelicula = new Pelicula();
+        $pelicula = $this->pelicula->with('actores.personajes')->find($id);
+
+        if (!$pelicula) {
+            return response()->json([
+                'message' => 'Película no encontrada'
+            ], 404);
+        }
+
+        return response()->json($pelicula);
+    }
+
+
 
 
 

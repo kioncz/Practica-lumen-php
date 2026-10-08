@@ -32,14 +32,11 @@ $router->group(['middleware' => 'jwt'], function () use ($router) {
     $router->get('/peliculas/todas', [
         'uses' => 'PeliculaController@allPeliculas'
     ]);
+    $router->get('/peliculas/{id}/informacion-completa', [
+    'uses' => 'PeliculaController@getPeliculaFullInfo']);
     $router->put('/peliculas/{id}', ['uses' => 'PeliculaController@update']);
     $router->delete('/peliculas/{id}', ['uses' => 'PeliculaController@destroy']);
 
-    $router->get('/expenses', ['uses' => 'ExpenseController@index']);
-    $router->post('/expenses', ['uses' => 'ExpenseController@store']);
-    $router->get('/expenses/{id}', ['uses' => 'ExpenseController@show']);
-    $router->put('/expenses/{id}', ['uses' => 'ExpenseController@update']);
-    $router->delete('/expenses/{id}', ['uses' => 'ExpenseController@destroy']);
 
 });
 

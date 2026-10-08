@@ -21,6 +21,11 @@ class Pelicula extends Model
         return $this->belongsTo(Usuario::class, 'usuario_id');
     }
 
+    public function actores()
+    {
+        return $this->hasMany(Actor::class, 'pelicula_id');
+    }
+
     // aqui puedes agregar cualquier otra relación o
     // método que necesites para tu modelo Pelicula
 
@@ -28,13 +33,14 @@ class Pelicula extends Model
     // Consulta a la base de datos usando el QueryBuilder de Eloquent
     public function obtenerPorGenero($genero)
     {
-        return $this->where('genero', '=', $genero)->get();
+        return $this->with('actores.personajes')
+            ->where('genero', '=', $genero)
+            ->get();
     }
     //onbtiene todas las peliculas de la base de datos
     public function obtenerTodas()
     {
-        return $this->all();
-
+        return $this->with('actores.personajes')->get();
     }
 
 }
