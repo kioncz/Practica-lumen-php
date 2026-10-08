@@ -23,7 +23,6 @@
                 >
             </div>
             <button type="submit">Buscar</button>
-            <button type="button" id="mostrar-todas">Mostrar todas</button>
         </form>
 
         <p id="mensaje" role="status"></p>
@@ -45,6 +44,7 @@
                             <th>Director</th>
                             <th>Año</th>
                             <th>Género</th>
+                            <th>Usuario</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,6 +54,38 @@
                                 <td><?= htmlspecialchars($pelicula->director) ?></td>
                                 <td><?= htmlspecialchars($pelicula->anio) ?></td>
                                 <td><?= htmlspecialchars($pelicula->genero) ?></td>
+                                <td>
+                                    <?php if ($pelicula->actores->isEmpty()): ?>
+                                        <span>Sin actores registrados.</span>
+                                    <?php else: ?>
+                                        <ul>
+                                            <?php foreach ($pelicula->actores as $actor): ?>
+                                                <li>
+                                                    <strong>
+                                                        <?= htmlspecialchars($actor->nombre) ?>
+                                                    </strong>
+                                                    <?php if ($actor->personajes->isEmpty()): ?>
+                                                        <span>
+                                                            (sin personajes registrados)
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <ul>
+                                                            <?php foreach ($actor->personajes as $personaje): ?>
+                                                                <li>
+                                                                    <?= htmlspecialchars($personaje->nombre) ?>
+                                                                    <?php if ($personaje->descripcion): ?>
+                                                                        -
+                                                                        <?= htmlspecialchars($personaje->descripcion) ?>
+                                                                    <?php endif; ?>
+                                                                </li>
+                                                            <?php endforeach; ?>
+                                                        </ul>
+                                                    <?php endif; ?>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -65,30 +97,6 @@
         const formulario = document.getElementById('filtro-genero');
         const resultados = document.getElementById('resultados');
         const mensaje = document.getElementById('mensaje');
-        const mostrarTodas = document.getElementById('mostrar-todas');
-
-        mostrarTodas.addEventListener('click', async function () {
-            mensaje.textContent = 'Cargando todas las películas...';
-
-            try {
-                const respuesta = await fetch('/peliculas/todas', {
-                    headers: { 'Accept': 'text/html' }
-                });
-
-                if (!respuesta.ok) {
-                    throw new Error('No se pudieron cargar todas las películas.');
-                }
-
-                const html = await respuesta.text();
-                const documento = new DOMParser().parseFromString(html, 'text/html');
-                resultados.innerHTML =
-                    documento.getElementById('resultados').innerHTML;
-                mensaje.textContent = '';
-                window.history.pushState({}, '', '/peliculas/todas');
-            } catch (error) {
-                mensaje.textContent = error.message;
-            }
-        });
 
         formulario.addEventListener('submit', async function (event) {
             event.preventDefault();
