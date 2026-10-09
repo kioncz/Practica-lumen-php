@@ -27,7 +27,7 @@ $router->group(['middleware' => 'jwt'], function () use ($router) {
     $router->get('/peliculas', ['uses' => 'PeliculaController@index']);
     $router->post('/peliculas', ['uses' => 'PeliculaController@store']);
     $router->get('/peliculas/buscargenero', [
-        'uses' => 'PeliculaController@buscargenero'
+        'uses' => 'PeliculaController@buscarPorGenero'
     ]);
     $router->get('/peliculas/todas', [
         'uses' => 'PeliculaController@allPeliculas'

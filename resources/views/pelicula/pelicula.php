@@ -5,130 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Películas</title>
     <link rel="stylesheet" href="/css/pelicula.css">
+    <script src="/js/pelicula.js"></script>
 </head>
 <body>
-    <main>
+    <div class="container">
         <h1>Películas</h1>
 
-        <form id="filtro-genero" action="/peliculas/buscargenero" method="GET">
-            <div>
-                <label for="genero">Género</label>
-                <input
-                    type="text"
-                    id="genero"
-                    name="genero"
-                    value="<?= htmlspecialchars($genero) ?>"
-                    placeholder="Ejemplo: acción"
-                    required
-                >
-            </div>
-            <button type="submit">Buscar</button>
-        </form>
-
-        <p id="mensaje" role="status"></p>
-
-        <section id="resultados">
-            <?php if ($genero !== ''): ?>
-                <h2>Resultados para: <?= htmlspecialchars($genero) ?></h2>
-            <?php endif; ?>
-
-            <?php if ($peliculas->isEmpty()): ?>
-                <?php if ($genero !== ''): ?>
-                    <p>No se encontraron películas para este género.</p>
-                <?php endif; ?>
-            <?php else: ?>
-                <table>
-                    <thead>
+        <div class = 'boton-busqueda'>
+            <form id="busqueda">
+                <label for="genero">Buscar por género:</label>
+                <input type="text" id="genero" name="genero">
+                <button type="submit">Buscar</button>
+            </form>
+        </div>
+        <div id="peliculas-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Género</th>
+                        <th>Año</th>
+                        <th>Actores</th>
+                        <th>Personajes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($peliculas as $pelicula): ?>
                         <tr>
-                            <th>Título</th>
-                            <th>Director</th>
-                            <th>Año</th>
-                            <th>Género</th>
-                            <th>Usuario</th>
+                            <td><?= $pelicula['id'] ?></td>
+                            <td><?= $pelicula['titulo'] ?></td>
+                            <td><?= $pelicula['genero'] ?></td>
+                            <td><?= $pelicula['anio'] ?></td>
+                            <td>
+                                <?php foreach ($pelicula->actores as $actor): ?>
+                                    <?= $actor->nombre ?><br>
+                                <?php endforeach; ?>
+                            </td>
+                            <td>
+                                <?php foreach ($pelicula->actores as $actor): ?>
+                                    <?php foreach ($actor->personajes as $personaje): ?>
+                                        <?= $personaje->nombre ?>: <?= $personaje->descripcion ?><br>
+                                    <?php endforeach; ?>
+                                <?php endforeach; ?>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($peliculas as $pelicula): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($pelicula->titulo) ?></td>
-                                <td><?= htmlspecialchars($pelicula->director) ?></td>
-                                <td><?= htmlspecialchars($pelicula->anio) ?></td>
-                                <td><?= htmlspecialchars($pelicula->genero) ?></td>
-                                <td>
-                                    <?php if ($pelicula->actores->isEmpty()): ?>
-                                        <span>Sin actores registrados.</span>
-                                    <?php else: ?>
-                                        <ul>
-                                            <?php foreach ($pelicula->actores as $actor): ?>
-                                                <li>
-                                                    <strong>
-                                                        <?= htmlspecialchars($actor->nombre) ?>
-                                                    </strong>
-                                                    <?php if ($actor->personajes->isEmpty()): ?>
-                                                        <span>
-                                                            (sin personajes registrados)
-                                                        </span>
-                                                    <?php else: ?>
-                                                        <ul>
-                                                            <?php foreach ($actor->personajes as $personaje): ?>
-                                                                <li>
-                                                                    <?= htmlspecialchars($personaje->nombre) ?>
-                                                                    <?php if ($personaje->descripcion): ?>
-                                                                        -
-                                                                        <?= htmlspecialchars($personaje->descripcion) ?>
-                                                                    <?php endif; ?>
-                                                                </li>
-                                                            <?php endforeach; ?>
-                                                        </ul>
-                                                    <?php endif; ?>
-                                                </li>
-                                            <?php endforeach; ?>
-                                        </ul>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
-        </section>
-
-    <script>
-        const formulario = document.getElementById('filtro-genero');
-        const resultados = document.getElementById('resultados');
-        const mensaje = document.getElementById('mensaje');
-
-        formulario.addEventListener('submit', async function (event) {
-            event.preventDefault();
-            mensaje.textContent = 'Buscando...';
-
-            const parametros = new URLSearchParams(new FormData(formulario));
-
-            try {
-                const respuesta = await fetch(
-                    formulario.action + '?' + parametros,
-                    { headers: { 'Accept': 'text/html' } }
-                );
-
-                if (!respuesta.ok) {
-                    throw new Error('La búsqueda no pudo completarse.');
-                }
-
-                const html = await respuesta.text();
-                const documento = new DOMParser().parseFromString(html, 'text/html');
-                resultados.innerHTML =
-                    documento.getElementById('resultados').innerHTML;
-                mensaje.textContent = '';
-                window.history.pushState(
-                    {},
-                    '',
-                    formulario.action + '?' + parametros
-                );
-            } catch (error) {
-                mensaje.textContent = error.message;
-            }
-        });
-    </script>
-    </main>
+                    <?php endforeach; ?>
+                </tbody>
+        </div>
+    </div>  
 </body>
 </html>
