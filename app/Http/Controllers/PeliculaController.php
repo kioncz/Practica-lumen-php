@@ -14,37 +14,44 @@ class PeliculaController extends Controller
         $this->pelicula = new Pelicula();
 
         return view('pelicula.pelicula', [
-            'peliculas' => $this->pelicula->obtenerTodas(),
-            'genero' => ''
+            'peliculas' => collect(),
+            'genero' => '',
         ]);
     }
 
-    public function buscargenero(Request $request)
+    public function buscarPorGenero(Request $request)
     {
-        $this->pelicula = new Pelicula();
         $genero = $request->input('genero');
-        $peliculas = $this->pelicula->obtenerPorGenero($genero);
-
-        $data = [
-            'peliculas' => $peliculas,
-            'genero' => $genero
-        ];
-        return view('pelicula.pelicula', $data);
-    }
-
-    public function allPeliculas()
-    {
         $this->pelicula = new Pelicula();
-        $peliculas = $this->pelicula->obtenerTodas();
 
-        $data = [
-            'peliculas' => $peliculas,
-            'genero' => ''
-        ];
+        $peliculas = Pelicula::where('genero', 'like', '%' . $genero . '%')
+            ->with([
+                'actores:id,pelicula_id,nombre',
+                'actores.personajes:id,actor_id,nombre,descripcion',
+            ])
+            ->get();
 
-        return view('pelicula.pelicula', $data);
+        return response()->json($peliculas);
     }
-
+    /**
+     * Define la relación entre películas y actores.
+     *
+     * @return array
+     */
+    public function relacionpeliculas()
+    {
+        return Pelicula::select([
+            'id',
+            'titulo',
+            'genero',
+            'anio',
+        ])
+            ->with([
+                'actores:id,pelicula_id,nombre',
+                'actores.personajes:id,actor_id,nombre,descripcion',
+            ])
+            ->get();
+    }
     /**
      * Obtiene la información completa de una película.
      *
