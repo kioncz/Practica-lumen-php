@@ -13,6 +13,8 @@
 
         <div class = 'boton-busqueda'>
             <form id="busqueda">
+                <label for="titulo">Buscar por título:</label>
+                <input type="text" id="titulo" name="titulo">
                 <label for="genero">Buscar por género:</label>
                 <input type="text" id="genero" name="genero">
                 <button type="submit">Buscar</button>
@@ -48,6 +50,7 @@
                                         <?= $personaje->nombre ?>: <?= $personaje->descripcion ?><br>
                                     <?php endforeach; ?>
                                 <?php endforeach; ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

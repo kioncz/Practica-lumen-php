@@ -19,6 +19,27 @@ class PeliculaController extends Controller
         ]);
     }
 
+    /**
+     * Busca películas por nombre.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function peliculasPorNombre (Request $request){
+        
+        $nombre = $request->input('nombre');
+        $this->pelicula = new Pelicula();
+
+        $peliculas = Pelicula::where('titulo', 'like', '%' . $nombre . '%')
+            ->with([
+                'actores:id,pelicula_id,nombre',
+                'actores.personajes:id,actor_id,nombre,descripcion',
+            ])
+            ->get();
+
+        return response()->json($peliculas);
+    }
+
     public function buscarPorGenero(Request $request)
     {
         $genero = $request->input('genero');
