@@ -29,6 +29,9 @@ $router->group(['middleware' => 'jwt'], function () use ($router) {
     $router->get('/peliculas/buscargenero', [
         'uses' => 'PeliculaController@buscarPorGenero'
     ]);
+    $router->get('/peliculas/buscarnombre', [
+        'uses' => 'PeliculaController@peliculasPorNombre'
+    ]);
     $router->get('/peliculas/todas', [
         'uses' => 'PeliculaController@allPeliculas'
     ]);
