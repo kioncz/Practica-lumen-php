@@ -32,9 +32,28 @@ label {
     font-weight: bold;
 }
 
-input {
+input,
+select {
+    box-sizing: border-box;
+    min-height: 38px;
     padding: 9px;
     border: 1px solid #bbb;
+    border-radius: 4px;
+    background-color: white;
+    color: #333;
+    font: inherit;
+}
+
+select {
+    min-width: 190px;
+    cursor: pointer;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #555;
+    box-shadow: 0 0 0 2px rgba(85, 85, 85, 0.15);
 }
 
 button {

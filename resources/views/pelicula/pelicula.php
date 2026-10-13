@@ -16,7 +16,14 @@
                 <label for="titulo">Buscar por título:</label>
                 <input type="text" id="titulo" name="titulo">
                 <label for="genero">Buscar por género:</label>
-                <input type="text" id="genero" name="genero">
+                <select id="genero" name="genero">
+                    <option value="">Todos los géneros</option>
+                    <?php foreach ($generos as $generoOption): ?>
+                        <option value="<?= htmlspecialchars($generoOption, ENT_QUOTES, 'UTF-8') ?>">
+                            <?= htmlspecialchars($generoOption, ENT_QUOTES, 'UTF-8') ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
                 <button type="submit">Buscar</button>
             </form>
         </div>

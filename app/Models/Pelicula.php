@@ -43,4 +43,13 @@ class Pelicula extends Model
         return $this->with('actores.personajes')->get();
     }
 
+    public function getListaPeliculasPorGenero($genero)
+    {
+        $options = [
+            'peliculas' => $this->obtenerPorGenero($genero),
+            'genero' => $genero,
+        ];
+        return $options;
+    }
+
 }
