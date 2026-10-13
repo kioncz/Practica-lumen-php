@@ -15,6 +15,12 @@ class busquedaTotalPelicula {
 
     async EnviarFormulario() {
         const { genero, titulo } = this.buscarPelicula();
+
+        if (!genero && !titulo) {
+            window.location.reload();
+            return;
+        }
+
         const parametros = new URLSearchParams();
         let ruta = '/peliculas/buscargenero';
 

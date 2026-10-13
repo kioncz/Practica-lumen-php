@@ -14,7 +14,15 @@ class PeliculaController extends Controller
         $this->pelicula = new Pelicula();
 
         return view('pelicula.pelicula', [
-            'peliculas' => collect(),
+            'peliculas' => $this->pelicula->all(),
+            'generos' => $this->pelicula->newQuery()
+                ->whereNotNull('genero')
+                ->select('genero')
+                ->distinct()
+                ->orderBy('genero')
+                ->pluck('genero'),
+            //se usa collect() para crear una colección vacía de películas
+            // 'peliculas' => collect(),
             'genero' => '',
         ]);
     }
@@ -26,7 +34,7 @@ class PeliculaController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function peliculasPorNombre (Request $request){
-        
+
         $nombre = $request->input('nombre');
         $this->pelicula = new Pelicula();
 
@@ -45,14 +53,16 @@ class PeliculaController extends Controller
         $genero = $request->input('genero');
         $this->pelicula = new Pelicula();
 
-        $peliculas = Pelicula::where('genero', 'like', '%' . $genero . '%')
-            ->with([
-                'actores:id,pelicula_id,nombre',
-                'actores.personajes:id,actor_id,nombre,descripcion',
-            ])
-            ->get();
+        if ($genero === null || $genero === '') {
+            return response()->json([
+                'message' => 'Debe seleccionar un género.',
+            ], 422);
+        }
 
-        return response()->json($peliculas);
+        $opciones = $this->pelicula->getListaPeliculasPorGenero($genero);
+
+        // El frontend espera directamente la lista de películas.
+        return response()->json($opciones['peliculas']);
     }
     /**
      * Define la relación entre películas y actores.
@@ -93,78 +103,4 @@ class PeliculaController extends Controller
         return response()->json($pelicula);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//     public function store(Request $request)
-//     {
-//         $pelicula = new Pelicula();
-//         $pelicula->titulo = $request->input('titulo');
-//         $pelicula->director = $request->input('director');
-//         $pelicula->genero = $request->input('genero');
-//         $pelicula->anio = $request->input('anio');
-//         $pelicula->usuario_id = $request->input('usuario_id');
-//         //guarda los datos
-//         $pelicula->save();
-//         return response()->json(['message' => 'Película creada exitosamente', 'pelicula' => $pelicula], 201);
-//     }
-
-//     public function show($id)
-//     {
-//         $pelicula = Pelicula::find($id);
-//         if (!$pelicula) {
-//             return response()->json(['message' => 'Película no encontrada'], 404);
-//         }
-//         return response()->json($pelicula);
-//     }
-
-//     public function update(Request $request, $id)
-//     {
-//         $pelicula = Pelicula::find($id);
-//         if (!$pelicula) {
-//             return response()->json(['message' => 'Película no encontrada'], 404);
-//         }
-
-//         //enviar datos opcioneales para actualizar
-//         $pelicula->titulo = $request->input('titulo', $pelicula->titulo);
-//         $pelicula->director = $request->input('director', $pelicula->director);
-//         $pelicula->genero = $request->input('genero', $pelicula->genero);
-//         $pelicula->anio = $request->input('anio', $pelicula->anio);
-//         $pelicula->usuario_id = $request->input('usuario_id', $pelicula->usuario_id);
-//         $pelicula->save();
-
-//         return response()->json(['message' => 'Película actualizada exitosamente', 'pelicula' => $pelicula]);
-//     }
-
-//     public function destroy(Request $request, $id)
-//     {
-//         $pelicula = Pelicula::find($id);
-//         if (!$pelicula) {
-//             return response()->json(['message' => 'Película no encontrada'], 404);
-//         }
-//         $pelicula->delete();
-//         return response()->json(['message' => 'Película eliminada exitosamente']);
-//     }
 }
